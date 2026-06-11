@@ -17,4 +17,4 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-echo "==> Done. Site: https://yesorno.plateos.site/login"
+echo "==> Done: https://yesorno.plateos.site/login"
