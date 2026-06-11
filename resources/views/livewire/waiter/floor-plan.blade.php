@@ -89,8 +89,6 @@
                             @if($kitchenSummary->get('ready')){{ $kitchenSummary->get('ready') }} ready @endif
                         </div>
                     @endif
-                @else
-                    <div class="text-sm text-tebo-cream/40">{{ $table->seats }} seats · {{ $table->status->value }}</div>
                 @endif
             </button>
         @empty
