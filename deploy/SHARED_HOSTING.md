@@ -24,7 +24,7 @@ For Hostinger (or similar) **shared hosting**: no root/sudo, no Node, no long-ru
 
 | Setting | Value |
 |---------|--------|
-| PHP version | **8.3** |
+| PHP version | **8.2** or **8.3** |
 | Document root | `public_html/yesorno` (Laravel root, **not** `yesorno/public`) |
 | SSL | Enable Let's Encrypt for `yesorno.plateos.site` |
 
@@ -48,11 +48,11 @@ git pull
 composer install --no-dev --optimize-autoloader
 ```
 
-If `composer` uses PHP 8.2, run:
+Verify PHP version:
 
 ```bash
 php -v
-# If 8.3 in panel but CLI is 8.2, use the host's PHP 8.3 binary if listed in hPanel SSH docs.
+# Must be 8.2.0 or higher (8.2.30 works).
 ```
 
 **No SSH:** upload/sync the project via FTP/File Manager into `public_html/yesorno/`.  
@@ -134,7 +134,7 @@ Login: `admin@teboos.com` / `password` — change after first login.
 | Vite manifest not found | `git pull` — `public/build/manifest.json` is in the repo |
 | 500 error | Check `storage/logs/laravel.log`; fix folder permissions |
 | `/public` in URL | Install `.htaccess`; set docroot to `yesorno` not `yesorno/public` |
-| Composer PHP 8.2 error | Set PHP **8.3** in hPanel for the domain |
+| Composer PHP version error | Set PHP **8.2+** in hPanel for the domain |
 | White page | `APP_DEBUG=true` briefly, read error; then set back to `false` |
 
 ---

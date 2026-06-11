@@ -14,7 +14,7 @@ A full-featured restaurant POS built with Laravel, Livewire, and Laravel Reverb 
 
 ## Requirements
 
-- PHP 8.3+
+- PHP 8.2+
 - Composer
 - Node.js 18+
 - MySQL via XAMPP (default) or SQLite
@@ -63,7 +63,7 @@ Quick steps for `yesorno.plateos.site` on Hostinger shared hosting:
 
 1. hPanel → PHP **8.3**, document root `public_html/yesorno`
 2. `git pull` into `~/domains/plateos.site/public_html/yesorno`
-3. `composer install --no-dev --optimize-autoloader`
+3. `composer install --no-dev --optimize-autoloader` (PHP 8.2+)
 4. Copy `deploy/env.production.example` → `.env` (set DB + `APP_URL=https://yesorno.plateos.site`)
 5. `cp deploy/apache-public_html.htaccess .htaccess`
 6. `php artisan migrate --force --seed && php artisan storage:link && php artisan config:cache`
