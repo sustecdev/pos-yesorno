@@ -1,13 +1,13 @@
 <div wire:poll.5s="refreshBoard" data-station-id="{{ $stationId }}" class="h-full flex flex-col min-h-0 kitchen-kds">
 
     {{-- Top bar --}}
-    <header class="kitchen-header shrink-0 mb-3">
-        <div class="flex items-center justify-between gap-4 px-1">
-            <div class="flex items-center gap-3 min-w-0">
-                <span class="font-display text-2xl font-bold text-tebo-amber shrink-0">KDS</span>
+    <header class="kitchen-header shrink-0 mb-2">
+        <div class="flex items-center justify-between gap-3 px-1">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <span class="font-display text-xl sm:text-2xl font-bold text-tebo-amber shrink-0">KDS</span>
                 @if($currentStation)
                     <span class="hidden sm:inline text-tebo-cream/40">·</span>
-                    <span class="text-lg font-bold truncate" style="color: {{ $currentStation->color }}">{{ $currentStation->name }}</span>
+                    <span class="text-base sm:text-lg font-bold truncate" style="color: {{ $currentStation->color }}">{{ $currentStation->name }}</span>
                 @endif
             </div>
             <div class="flex items-center gap-3 shrink-0">
@@ -22,7 +22,7 @@
         </div>
 
         {{-- Live stats --}}
-        <div class="grid grid-cols-4 gap-2 mt-3">
+        <div class="grid grid-cols-4 gap-1.5 sm:gap-2 mt-2 sm:mt-3">
             <div class="kitchen-stat">
                 <span class="kitchen-stat-num">{{ $stats['tickets'] }}</span>
                 <span class="kitchen-stat-label">Tickets</span>
@@ -72,7 +72,7 @@
     @endif
 
     {{-- Station tabs --}}
-    <div class="tablet-scroll-x shrink-0 mb-4">
+    <div class="kitchen-station-bar shrink-0 mb-2 sm:mb-3">
         @foreach($stations as $station)
             @php $count = $stationCounts[$station->id] ?? 0; @endphp
             <button wire:click="switchStation({{ $station->id }})"
@@ -87,8 +87,8 @@
     </div>
 
     {{-- Ticket grid --}}
-    <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 pb-4">
+    <div class="kitchen-ticket-scroll flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain">
+        <div class="kitchen-ticket-grid gap-3 pb-4">
             @forelse($items as $orderId => $orderItems)
                 @php
                     $first = $orderItems->first();

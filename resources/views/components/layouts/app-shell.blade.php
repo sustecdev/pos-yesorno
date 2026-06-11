@@ -40,7 +40,7 @@
         </header>
     @endif
 
-    <main class="{{ $fullscreen ? 'h-[calc(100dvh-57px)] overflow-hidden' : '' }}">{{ $slot }}</main>
+    <main class="{{ $fullscreen ? 'h-[calc(100dvh-57px)] overflow-hidden' : ($tablet ? 'tablet-shell-main' : '') }}">{{ $slot }}</main>
 
     <div x-show="toast.show"
          x-transition

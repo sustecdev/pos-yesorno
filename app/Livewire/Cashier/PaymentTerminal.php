@@ -23,6 +23,8 @@ class PaymentTerminal extends Component
 
     public string $listTab = 'pending';
 
+    public string $activePanel = 'orders';
+
     public string $discountType = DiscountCalculator::TYPE_FLAT;
 
     public int $discountValue = 0;
@@ -36,10 +38,21 @@ class PaymentTerminal extends Component
         $this->orderId = $orderId !== null ? (int) $orderId : null;
     }
 
+    public function showOrders(): void
+    {
+        $this->activePanel = 'orders';
+    }
+
+    public function showPayment(): void
+    {
+        $this->activePanel = 'payment';
+    }
+
     public function selectOrder(int $id): void
     {
         $order = Order::query()->find($id);
         $this->orderId = $id;
+        $this->activePanel = 'payment';
         $this->discountType = $order?->discount_type ?? DiscountCalculator::TYPE_FLAT;
         $this->discountValue = (int) ($order?->discount_value ?? $order?->discount_cents ?? 0);
 
@@ -56,6 +69,7 @@ class PaymentTerminal extends Component
 
         $this->listTab = $tab;
         $this->orderId = null;
+        $this->activePanel = 'orders';
         $this->discountType = DiscountCalculator::TYPE_FLAT;
         $this->discountValue = 0;
         $this->tipCents = 0;
