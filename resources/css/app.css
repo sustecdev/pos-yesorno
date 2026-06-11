@@ -226,6 +226,10 @@
         @apply overflow-x-hidden;
     }
 
+    .waiter-body-floor {
+        @apply h-dvh flex flex-col overflow-hidden;
+    }
+
     .waiter-body-order {
         @apply h-dvh flex flex-col overflow-hidden;
     }
@@ -234,6 +238,12 @@
         @apply px-4 pt-4;
         padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
         min-height: calc(100dvh - 57px);
+    }
+
+    .waiter-body-floor .waiter-main {
+        @apply flex-1 min-h-0 overflow-y-auto overscroll-contain;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
     }
 
     .waiter-body-order .waiter-main-order {
@@ -274,8 +284,10 @@
         }
     }
 
-    .waiter-menu-scroll {
+    .waiter-menu-scroll,
+    .waiter-order-scroll {
         @apply flex-1 min-h-0 overflow-y-auto overscroll-contain;
+        -webkit-overflow-scrolling: touch;
     }
 
     @media (max-width: 1023px) {

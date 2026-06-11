@@ -17,7 +17,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-dvh bg-tebo-dark text-tebo-cream font-sans antialiased waiter-body {{ request()->routeIs('waiter.order') ? 'waiter-body-order' : '' }}"
+<body class="min-h-dvh bg-tebo-dark text-tebo-cream font-sans antialiased waiter-body {{ request()->routeIs('waiter.order') ? 'waiter-body-order' : 'waiter-body-floor' }}"
       x-data="teboApp()"
       x-on:tebo-toast.window="showToast($event.detail)">
 

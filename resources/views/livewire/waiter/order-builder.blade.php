@@ -78,13 +78,13 @@
         </div>
 
         {{-- Cart (tab/sheet on tablet, sidebar on large screens) --}}
-        <div class="w-full lg:w-72 xl:w-80 shrink-0 flex flex-col min-h-0 {{ $activePanel !== 'cart' ? 'hidden lg:flex' : 'flex' }}">
+        <div class="flex-1 lg:flex-none w-full lg:w-72 xl:w-80 min-w-0 flex flex-col min-h-0 {{ $activePanel !== 'cart' ? 'hidden lg:flex' : 'flex' }}">
             <div class="tebo-card flex-1 flex flex-col min-h-0 overflow-hidden border-tebo-amber/20">
                 <div class="p-4 border-b border-tebo-border flex items-center justify-between shrink-0">
                     <h3 class="font-display font-bold text-lg">Order</h3>
                     <span class="text-tebo-amber font-bold">{{ money($order->total_cents) }}</span>
                 </div>
-                <div class="flex-1 overflow-y-auto p-3 space-y-3">
+                <div class="waiter-order-scroll p-3 space-y-3">
                     @forelse($order->items->where('status', '!=', 'cancelled') as $item)
                         <div class="rounded-xl bg-tebo-darker/60 p-3 {{ $item->sent_at ? 'border-l-4 border-tebo-amber' : '' }}">
                             <div class="flex justify-between gap-2">
