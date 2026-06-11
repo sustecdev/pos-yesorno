@@ -1,4 +1,6 @@
-# Recommended fix for pos.yesorno.bar (Hostinger shared hosting)
+# Document root = `public/` folder (shared hosting)
+
+Works on Hostinger, Hetzner Web Hosting, and similar panels.
 
 If you get **404 Not Found** on `/login` and `/public/login`, use this setup.
 
