@@ -19,7 +19,7 @@ jobs:
         env:
           VPS_HOST: 187.124.210.108
           VPS_USER: root
-          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+          VPS_PASSWORD: TeboOS-Vps-Deploy-2026
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq sshpass
