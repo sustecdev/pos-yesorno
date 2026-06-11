@@ -68,6 +68,7 @@ class FloorPlan extends Component
         $stats = [
             'free' => $allTables->where('status', TableStatus::Free)->count(),
             'active' => $allTables->filter(fn ($t) => $t->activeOrder)->count(),
+            'kitchen' => $allTables->filter(fn ($t) => $t->activeOrder && in_array($t->activeOrder->status, [OrderStatus::Sent, OrderStatus::Preparing], true))->count(),
             'ready' => $allTables->filter(fn ($t) => $t->activeOrder?->status === OrderStatus::Ready)->count(),
             'bill' => $allTables->filter(fn ($t) => $t->activeOrder?->status === OrderStatus::Served)->count(),
         ];

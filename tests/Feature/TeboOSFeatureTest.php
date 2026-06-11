@@ -234,6 +234,42 @@ class TeboOSFeatureTest extends TestCase
         ]);
     }
 
+    public function test_waiter_cannot_remove_item_after_kitchen_starts(): void
+    {
+        $waiter = $this->user('waiter');
+        $kitchen = $this->user('kitchen');
+        $table = DiningTable::query()->where('number', '5')->firstOrFail();
+        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+
+        $component = Livewire::actingAs($waiter)
+            ->test(OrderBuilder::class, ['table' => $table])
+            ->call('quickAddOrConfigure', $salad->id)
+            ->call('sendToKitchen');
+
+        $itemId = $component->get('order')->items->first()->id;
+
+        Livewire::actingAs($kitchen)
+            ->test(KdsBoard::class)
+            ->call('startItem', $itemId);
+
+        $component
+            ->call('removeItem', $itemId)
+            ->assertDispatched('toast');
+
+        $this->assertDatabaseHas('order_items', [
+            'id' => $itemId,
+            'status' => OrderItemStatus::Preparing->value,
+        ]);
+    }
+
+    public function test_waiter_floor_plan_kitchen_filter(): void
+    {
+        Livewire::actingAs($this->user('waiter'))
+            ->test(FloorPlan::class)
+            ->call('setFilter', 'kitchen')
+            ->assertSet('filter', 'kitchen');
+    }
+
     public function test_kitchen_kds_page_renders_with_active_tickets(): void
     {
         $waiter = $this->user('waiter');

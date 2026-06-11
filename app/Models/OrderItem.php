@@ -46,4 +46,9 @@ class OrderItem extends Model
     {
         return $this->hasMany(OrderItemModifier::class);
     }
+
+    public function canBeRemovedByWaiter(): bool
+    {
+        return $this->status === OrderItemStatus::Queued;
+    }
 }

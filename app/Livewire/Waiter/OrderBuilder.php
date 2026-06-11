@@ -150,6 +150,12 @@ class OrderBuilder extends Component
             ->where('status', '!=', 'cancelled')
             ->findOrFail($itemId);
 
+        if (! $item->canBeRemovedByWaiter()) {
+            $this->dispatch('toast', message: 'Cannot remove — kitchen has already started this item.', type: 'error');
+
+            return;
+        }
+
         $wasSent = $item->sent_at !== null;
 
         $orderService->cancelItem($item);
