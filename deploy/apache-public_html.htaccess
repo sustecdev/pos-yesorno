@@ -1,5 +1,6 @@
-# Use when the web root is the Laravel project folder (e.g. Hostinger public_html).
-# Copy to the project root as .htaccess:
+# Use when the web root is the Laravel project folder (e.g. public_html/yesorno).
+# Copy to the Laravel root as .htaccess:
+#   cd ~/domains/plateos.site/public_html/yesorno
 #   cp deploy/apache-public_html.htaccess .htaccess
 #
 # URLs stay as https://yesorno.plateos.site/login (no /public in the address bar).

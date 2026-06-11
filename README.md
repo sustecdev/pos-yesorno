@@ -60,9 +60,9 @@ Open http://localhost:8000
 When the web root is `public_html` and you want `https://yesorno.plateos.site/login` (not `/public/login`):
 
 ```bash
-cd ~/domains/yesorno.plateos.site/public_html
+cd ~/domains/plateos.site/public_html/yesorno
 
-# After git pull / composer install
+# After git pull / composer install (build assets are committed — no npm required on server)
 cp deploy/apache-public_html.htaccess .htaccess
 
 php8.3 artisan storage:link
