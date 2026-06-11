@@ -1,0 +1,401 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../app/Livewire/**/*.php';
+@source '../../resources/views/**/*.blade.php';
+
+@theme {
+    --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+
+    --color-tebo-dark: #0F1117;
+    --color-tebo-darker: #080A0E;
+    --color-tebo-amber: #F5A623;
+    --color-tebo-amber-dim: #C4841C;
+    --color-tebo-cream: #F5F0E8;
+    --color-tebo-green: #2ECC71;
+    --color-tebo-red: #E85D4C;
+    --color-tebo-blue: #4ECDC4;
+    --color-tebo-surface: #1A1D27;
+    --color-tebo-border: #2A2F3D;
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    body {
+        @apply bg-tebo-dark text-tebo-cream font-sans antialiased;
+        overscroll-behavior: none;
+    }
+
+    button, a, [role="button"] {
+        touch-action: manipulation;
+    }
+
+    input, select, textarea {
+        font-size: 16px;
+    }
+}
+
+@layer utilities {
+    .tebo-card {
+        @apply bg-tebo-surface border border-tebo-border rounded-2xl;
+    }
+
+    .tebo-btn {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-all duration-200 active:scale-95;
+    }
+
+    .tebo-btn-primary {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-all duration-200 active:scale-95 bg-tebo-amber text-tebo-dark hover:bg-tebo-amber-dim;
+    }
+
+    .tebo-btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-all duration-200 active:scale-95 bg-tebo-surface border border-tebo-border hover:border-tebo-amber/50;
+    }
+
+    .tebo-input {
+        @apply w-full bg-tebo-darker border border-tebo-border rounded-xl px-4 py-3 text-tebo-cream placeholder:text-tebo-cream/40 focus:outline-none focus:border-tebo-amber/60;
+    }
+
+    .table-status-free { @apply ring-2 ring-tebo-green/60; }
+    .table-status-occupied { @apply ring-2 ring-tebo-amber; }
+    .table-status-reserved { @apply ring-2 ring-tebo-blue; }
+    .table-status-dirty { @apply ring-2 ring-tebo-red/60; }
+
+    .kds-ticket-enter {
+        animation: slideIn 0.4s ease-out;
+    }
+
+    .pulse-rush {
+        animation: pulseRush 1.5s ease-in-out infinite;
+    }
+
+    .screen-edge-flash {
+        animation: edgeFlash 0.6s ease-out;
+    }
+
+    .tebo-touch {
+        @apply min-h-12 min-w-12 touch-manipulation select-none;
+    }
+
+    .tebo-touch-lg {
+        @apply min-h-14 min-w-14 touch-manipulation select-none;
+    }
+
+    .tebo-tab {
+        @apply min-h-12 min-w-12 touch-manipulation select-none px-5 py-3 rounded-2xl text-base font-medium whitespace-nowrap shrink-0;
+    }
+
+    .tebo-tab-active {
+        @apply bg-tebo-amber text-tebo-dark shadow-lg shadow-tebo-amber/20;
+    }
+
+    .tebo-tab-inactive {
+        @apply bg-tebo-surface border border-tebo-border text-tebo-cream;
+    }
+
+    .tablet-scroll-x {
+        @apply flex gap-3 overflow-x-auto pb-2 -mx-1 px-1;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .tablet-scroll-x::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tablet-bottom-bar {
+        @apply fixed bottom-0 left-0 right-0 z-40 bg-tebo-darker/95 backdrop-blur-lg border-t border-tebo-border;
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+
+    .tablet-sheet {
+        @apply fixed inset-x-0 bottom-0 z-50 bg-tebo-surface border-t border-tebo-border rounded-t-3xl shadow-2xl;
+        max-height: 85vh;
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+
+    .tablet-sheet-backdrop {
+        @apply fixed inset-0 z-40 bg-black/60 backdrop-blur-sm;
+    }
+
+    .tablet-safe-top {
+        padding-top: max(0.5rem, env(safe-area-inset-top));
+    }
+
+    .tablet-safe-bottom {
+        padding-bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 5rem));
+    }
+
+    .tablet-menu-grid {
+        @apply grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4;
+    }
+
+    .tablet-table-card {
+        @apply bg-tebo-surface border border-tebo-border rounded-2xl min-h-14 min-w-14 touch-manipulation select-none p-6 md:p-8 text-center active:scale-[0.97] transition-transform;
+    }
+
+    .tablet-kds-action {
+        @apply min-h-14 min-w-14 touch-manipulation select-none flex-1 rounded-2xl text-base font-bold uppercase tracking-wide;
+    }
+
+    .tablet-num-pad {
+        @apply grid grid-cols-3 gap-2;
+    }
+
+    .tablet-num-key {
+        @apply min-h-14 min-w-14 touch-manipulation select-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl font-medium transition-all duration-200 active:scale-95 bg-tebo-surface border border-tebo-border hover:border-tebo-amber/50 text-xl font-bold;
+    }
+
+    .waiter-body {
+        @apply overflow-x-hidden;
+    }
+
+    .waiter-main {
+        @apply px-4 pt-4;
+        padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+        min-height: calc(100dvh - 57px);
+    }
+
+    .waiter-main-order {
+        @apply px-3 pt-3 pb-0 flex flex-col;
+        padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+        height: calc(100dvh - 57px);
+        max-height: calc(100dvh - 57px);
+    }
+
+    .waiter-nav-item {
+        @apply flex flex-col items-center justify-center gap-1 py-3 px-2 text-tebo-cream/45 text-xs font-medium touch-manipulation transition-colors;
+    }
+
+    .waiter-nav-active {
+        @apply text-tebo-amber;
+    }
+
+    .waiter-stat-pill {
+        @apply flex flex-col items-center justify-center min-h-12 touch-manipulation select-none rounded-2xl px-4 py-3 min-w-[4.5rem] border border-tebo-border bg-tebo-surface;
+    }
+
+    .waiter-stat-pill-active {
+        @apply border-tebo-amber bg-tebo-amber/10 text-tebo-amber;
+    }
+
+    .waiter-table-free { @apply bg-tebo-green/5 border-tebo-green/30; }
+    .waiter-table-occupied { @apply bg-tebo-amber/5 border-tebo-amber/40; }
+    .waiter-table-ready { @apply bg-tebo-green/10 border-tebo-green ring-2 ring-tebo-green/40; }
+    .waiter-table-bill { @apply bg-tebo-blue/10 border-tebo-blue ring-2 ring-tebo-blue/40; }
+    .waiter-table-reserved { @apply bg-tebo-blue/5 border-tebo-blue/30; }
+    .waiter-table-dirty { @apply bg-tebo-red/5 border-tebo-red/30 opacity-80; }
+
+    .waiter-fab {
+        @apply fixed z-30 min-h-14 touch-manipulation select-none rounded-full bg-tebo-amber text-tebo-dark font-bold shadow-xl shadow-tebo-amber/30 flex items-center gap-2 px-5 py-4;
+        bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+        right: 1rem;
+    }
+
+    .waiter-progress-step {
+        @apply flex-1 h-1.5 rounded-full bg-tebo-border;
+    }
+
+    .waiter-progress-step-done {
+        @apply bg-tebo-amber;
+    }
+
+    .waiter-progress-step-current {
+        @apply bg-tebo-amber/60 animate-pulse;
+    }
+
+    /* Kitchen KDS */
+    .kitchen-body {
+        @apply overflow-hidden;
+    }
+
+    .kitchen-main {
+        @apply h-dvh flex flex-col p-3 md:p-4;
+        padding-top: max(0.75rem, env(safe-area-inset-top));
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+
+    .kitchen-kds {
+        height: 100%;
+    }
+
+    .kitchen-clock {
+        @apply text-tebo-cream/80;
+    }
+
+    .kitchen-icon-btn {
+        @apply min-h-12 min-w-12 touch-manipulation flex items-center justify-center rounded-xl bg-tebo-surface border border-tebo-border text-tebo-cream/50 hover:text-tebo-amber hover:border-tebo-amber/40;
+    }
+
+    .kitchen-stat {
+        @apply flex flex-col items-center justify-center rounded-xl py-2 px-1 bg-tebo-surface/60 border border-tebo-border;
+    }
+
+    .kitchen-stat-num {
+        @apply font-display text-2xl font-bold leading-none;
+    }
+
+    .kitchen-stat-label {
+        @apply text-[10px] uppercase tracking-wider text-tebo-cream/40 mt-1 font-bold;
+    }
+
+    .kitchen-stat-new .kitchen-stat-num { @apply text-tebo-amber; }
+    .kitchen-stat-cooking .kitchen-stat-num { @apply text-tebo-blue; }
+    .kitchen-stat-ready .kitchen-stat-num { @apply text-tebo-green; }
+
+    .kitchen-alert-banner {
+        @apply flex items-center justify-center gap-3 py-4 px-4 rounded-2xl bg-tebo-red text-white font-bold text-lg touch-manipulation active:scale-[0.98] transition-transform border-2 border-tebo-red;
+        box-shadow: 0 0 30px rgba(232, 93, 76, 0.4);
+    }
+
+    .kitchen-broadcast {
+        @apply flex items-center gap-3 px-5 py-4 rounded-2xl bg-tebo-amber/15 border-2 border-tebo-amber text-tebo-amber;
+    }
+
+    .kitchen-alert-chip {
+        @apply shrink-0 px-5 py-3 rounded-2xl font-bold text-sm uppercase tracking-wide touch-manipulation bg-tebo-amber text-tebo-dark border-2 border-tebo-amber;
+    }
+
+    .kitchen-alert-urgent {
+        @apply bg-tebo-red text-white border-tebo-red;
+        animation: pulseRush 1.5s ease-in-out infinite;
+    }
+
+    .kitchen-station-tab {
+        @apply shrink-0 flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-base touch-manipulation select-none bg-tebo-surface border-2 border-tebo-border text-tebo-cream/60 transition-all;
+    }
+
+    .kitchen-station-active {
+        background-color: var(--station-color, #F5A623);
+        border-color: var(--station-color, #F5A623);
+        color: #0F1117;
+        box-shadow: 0 4px 24px color-mix(in srgb, var(--station-color, #F5A623) 40%, transparent);
+    }
+
+    .kitchen-station-badge {
+        @apply min-w-[1.5rem] h-6 px-1.5 flex items-center justify-center rounded-full text-xs font-bold bg-tebo-dark/30;
+    }
+
+    .kitchen-station-active .kitchen-station-badge {
+        @apply bg-tebo-dark/20;
+    }
+
+    .kitchen-ticket {
+        @apply rounded-2xl border-2 border-tebo-border bg-tebo-surface overflow-hidden flex flex-col;
+    }
+
+    .kitchen-ticket-rush {
+        @apply border-tebo-red;
+        animation: pulseRush 1.5s ease-in-out infinite;
+        box-shadow: 0 0 20px rgba(232, 93, 76, 0.25);
+    }
+
+    .kitchen-ticket-allergy {
+        @apply border-tebo-red/70;
+    }
+
+    .kitchen-ticket-header {
+        @apply flex items-start justify-between px-4 pt-4 pb-2;
+    }
+
+    .kitchen-table-num {
+        @apply font-display text-5xl font-bold leading-none text-tebo-cream;
+    }
+
+    .kitchen-timer {
+        @apply text-lg font-bold tabular-nums px-2.5 py-1 rounded-lg;
+    }
+
+    .kitchen-timer-ok { @apply bg-tebo-green/20 text-tebo-green; }
+    .kitchen-timer-warn { @apply bg-tebo-amber/20 text-tebo-amber; }
+    .kitchen-timer-late { @apply bg-tebo-red/30 text-tebo-red animate-pulse; }
+
+    .kitchen-badge-rush {
+        @apply text-[10px] font-black px-2 py-0.5 rounded bg-tebo-red text-white tracking-wider;
+    }
+
+    .kitchen-badge-allergy {
+        @apply text-[10px] font-black px-2 py-0.5 rounded bg-tebo-red/80 text-white tracking-wider;
+    }
+
+    .kitchen-ticket-action {
+        @apply flex-1 min-h-10 touch-manipulation rounded-xl text-xs font-bold uppercase tracking-wide px-2 py-2 border;
+    }
+
+    .kitchen-action-start { @apply bg-tebo-amber/20 border-tebo-amber/40 text-tebo-amber; }
+    .kitchen-action-ready { @apply bg-tebo-green/20 border-tebo-green/40 text-tebo-green; }
+    .kitchen-action-bump { @apply bg-tebo-surface border-tebo-border text-tebo-cream/70; }
+
+    .kitchen-ticket-items {
+        @apply flex flex-col border-t border-tebo-border/50;
+    }
+
+    .kitchen-item {
+        @apply px-4 py-3 border-b border-tebo-border/30 last:border-0;
+    }
+
+    .kitchen-item-allergy {
+        @apply bg-tebo-red/10 border-l-4 border-l-tebo-red;
+    }
+
+    .kitchen-item-done {
+        @apply opacity-60;
+    }
+
+    .kitchen-item-name {
+        @apply font-bold text-lg leading-tight;
+    }
+
+    .kitchen-item-note {
+        @apply text-sm text-tebo-amber/80 italic mt-1;
+    }
+
+    .kitchen-item-allergy-text {
+        @apply text-sm font-bold text-tebo-red mt-1;
+    }
+
+    .kitchen-item-status {
+        @apply shrink-0 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg;
+    }
+
+    .kitchen-status-queued { @apply bg-tebo-amber/20 text-tebo-amber; }
+    .kitchen-status-preparing { @apply bg-tebo-blue/20 text-tebo-blue; }
+    .kitchen-status-ready { @apply bg-tebo-green/30 text-tebo-green; }
+
+    .kitchen-item-btn {
+        @apply flex-1 min-h-12 touch-manipulation rounded-xl font-bold text-sm uppercase tracking-wide;
+    }
+
+    .kitchen-btn-start { @apply bg-tebo-amber text-tebo-dark; }
+    .kitchen-btn-ready { @apply bg-tebo-green text-tebo-dark; }
+    .kitchen-btn-bump { @apply bg-tebo-darker border border-tebo-border text-tebo-cream/60; }
+
+    .kitchen-empty {
+        @apply flex flex-col items-center justify-center py-32 text-center;
+    }
+
+    .kitchen-empty-icon {
+        @apply w-24 h-24 rounded-full border-4 border-tebo-green/30 flex items-center justify-center text-5xl text-tebo-green/50 mb-4;
+    }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulseRush {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232, 93, 76, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(232, 93, 76, 0); }
+}
+
+@keyframes edgeFlash {
+    0% { box-shadow: inset 0 0 0 4px rgba(245, 166, 35, 0.8); }
+    100% { box-shadow: inset 0 0 0 0 rgba(245, 166, 35, 0); }
+}
