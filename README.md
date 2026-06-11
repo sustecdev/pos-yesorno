@@ -55,6 +55,28 @@ Open http://localhost:8000
 | Cashier | cashier@teboos.com | password |
 | Host | host@teboos.com | password |
 
+## VPS deploy (no `/public` in URL)
+
+When the web root is `public_html` and you want `https://yesorno.plateos.site/login` (not `/public/login`):
+
+```bash
+cd ~/domains/yesorno.plateos.site/public_html
+
+# After git pull / composer install
+cp deploy/apache-public_html.htaccess .htaccess
+
+php8.3 artisan storage:link
+php8.3 artisan config:cache
+php8.3 artisan route:cache
+php8.3 artisan view:cache
+```
+
+This rewrites requests internally to `public/` and blocks web access to `app/`, `vendor/`, `.env`, etc.
+
+For **nginx**, use `deploy/nginx-public_html.conf` as a starting point.
+
+**Requirements:** PHP 8.3+ (Laravel 13). Set `APP_URL=https://yesorno.plateos.site` in `.env`.
+
 ## XAMPP + MySQL
 
 `.env` is preconfigured for XAMPP MySQL (`teboos` database, user `root`, no password).
