@@ -39,8 +39,8 @@
         </div>
     </div>
 
-    {{-- Portrait / tablet portrait: toggle menu vs order --}}
-    <div class="lg:hidden flex gap-2 mb-2 shrink-0">
+    {{-- Phone only: toggle menu vs order (tablets 768px+ show both side by side) --}}
+    <div class="md:hidden flex gap-2 mb-2 shrink-0">
         <button wire:click="showMenu" class="flex-1 tebo-tab {{ $activePanel === 'menu' ? 'tebo-tab-active' : 'tebo-tab-inactive' }}">
             Menu
         </button>
@@ -49,9 +49,9 @@
         </button>
     </div>
 
-    <div class="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 overflow-hidden">
+    <div class="flex-1 min-h-0 flex flex-col md:flex-row gap-3 overflow-hidden">
         {{-- Menu --}}
-        <div class="flex-1 flex flex-col min-h-0 min-w-0 {{ $activePanel !== 'menu' ? 'hidden lg:flex' : 'flex' }}">
+        <div class="flex-1 flex flex-col min-h-0 min-w-0 {{ $activePanel !== 'menu' ? 'hidden md:flex' : 'flex' }}">
             <input type="search"
                    wire:model.live.debounce.300ms="search"
                    placeholder="Search menu…"
@@ -68,30 +68,32 @@
                 @endforeach
             </div>
 
-            <div class="waiter-menu-scroll tablet-menu-grid content-start {{ $activePanel === 'menu' && $itemCount > 0 ? 'has-fab' : '' }}">
-                @forelse($menuItems as $item)
-                    <button wire:click="quickAddOrConfigure({{ $item->id }})"
-                        wire:loading.attr="disabled"
-                        wire:target="quickAddOrConfigure({{ $item->id }})"
-                        class="tablet-menu-item {{ $selectedMenuItemId === $item->id ? 'border-tebo-amber ring-2 ring-tebo-amber/30' : '' }}">
-                        <div class="tablet-menu-item-name">{{ $item->name }}</div>
-                        <div class="tablet-menu-item-footer">
-                            <span class="text-tebo-amber text-lg sm:text-xl font-bold">{{ $item->formattedPrice() }}</span>
-                            @if($item->modifierGroups->isNotEmpty())
-                                <span class="text-[10px] sm:text-xs text-tebo-cream/40 uppercase tracking-wide shrink-0">Options</span>
-                            @else
-                                <span class="text-[10px] sm:text-xs text-tebo-green font-bold shrink-0">+ Add</span>
-                            @endif
-                        </div>
-                    </button>
-                @empty
-                    <p class="col-span-full text-center text-tebo-cream/40 py-12">No items found</p>
-                @endforelse
+            <div class="waiter-menu-scroll min-h-0 {{ $activePanel === 'menu' && $itemCount > 0 ? 'has-fab' : '' }}">
+                <div class="tablet-menu-grid content-start">
+                    @forelse($menuItems as $item)
+                        <button wire:click="quickAddOrConfigure({{ $item->id }})"
+                            wire:loading.attr="disabled"
+                            wire:target="quickAddOrConfigure({{ $item->id }})"
+                            class="tablet-menu-item {{ $selectedMenuItemId === $item->id ? 'border-tebo-amber ring-2 ring-tebo-amber/30' : '' }}">
+                            <div class="tablet-menu-item-name">{{ $item->name }}</div>
+                            <div class="tablet-menu-item-footer">
+                                <span class="text-tebo-amber text-lg sm:text-xl font-bold">{{ $item->formattedPrice() }}</span>
+                                @if($item->modifierGroups->isNotEmpty())
+                                    <span class="text-[10px] sm:text-xs text-tebo-cream/40 uppercase tracking-wide shrink-0">Options</span>
+                                @else
+                                    <span class="text-[10px] sm:text-xs text-tebo-green font-bold shrink-0">+ Add</span>
+                                @endif
+                            </div>
+                        </button>
+                    @empty
+                        <p class="col-span-full text-center text-tebo-cream/40 py-12">No items found</p>
+                    @endforelse
+                </div>
             </div>
         </div>
 
         {{-- Cart sidebar --}}
-        <div class="w-full lg:w-80 xl:w-96 shrink-0 flex flex-col min-h-0 {{ $activePanel !== 'cart' ? 'hidden lg:flex' : 'flex' }}">
+        <div class="w-full md:w-64 lg:w-72 xl:w-80 shrink-0 flex flex-col min-h-0 {{ $activePanel !== 'cart' ? 'hidden md:flex' : 'flex' }}">
             <div class="tebo-card flex-1 flex flex-col min-h-0 overflow-hidden border-tebo-amber/20">
                 <div class="p-4 border-b border-tebo-border flex items-center justify-between shrink-0">
                     <h3 class="font-display font-bold text-lg">Order</h3>
@@ -140,7 +142,7 @@
 
     {{-- Floating cart (portrait, on menu tab) --}}
     @if($activePanel === 'menu' && $itemCount > 0)
-        <button wire:click="showCart" class="waiter-fab lg:hidden">
+        <button wire:click="showCart" class="waiter-fab md:hidden">
             <span>{{ $itemCount }}</span>
             <span>View order</span>
             <span class="font-bold">{{ money($order->total_cents, false) }}</span>
@@ -149,23 +151,23 @@
 
     {{-- Action bar --}}
     <div class="waiter-order-actions">
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
             <button wire:click="sendToKitchen" wire:loading.attr="disabled"
-                class="col-span-1 sm:col-span-2 lg:col-span-3 tebo-touch-lg tebo-btn-primary text-base sm:text-lg font-bold py-3 sm:py-4 rounded-2xl">
+                class="col-span-1 sm:col-span-2 md:col-span-3 tebo-touch-lg tebo-btn-primary text-base sm:text-lg font-bold py-3 sm:py-4 rounded-2xl">
                 <span wire:loading.remove wire:target="sendToKitchen">Kitchen</span>
                 <span wire:loading wire:target="sendToKitchen">…</span>
             </button>
             <button wire:click="openBillPanel"
-                class="col-span-1 sm:col-span-2 lg:col-span-3 tebo-touch-lg rounded-2xl font-bold py-3 sm:py-4 border-2 border-tebo-amber/50 text-tebo-amber bg-tebo-amber/10">
+                class="col-span-1 sm:col-span-2 md:col-span-3 tebo-touch-lg rounded-2xl font-bold py-3 sm:py-4 border-2 border-tebo-amber/50 text-tebo-amber bg-tebo-amber/10">
                 Bill
             </button>
-            <button wire:click="markRush" class="col-span-1 sm:col-span-2 lg:col-span-2 tebo-touch-lg tebo-btn-ghost text-tebo-red border-tebo-red/30 font-bold text-sm py-3">
+            <button wire:click="markRush" class="col-span-1 sm:col-span-2 md:col-span-2 tebo-touch-lg tebo-btn-ghost text-tebo-red border-tebo-red/30 font-bold text-sm py-3">
                 Rush
             </button>
-            <button wire:click="fireCourse" class="col-span-1 sm:col-span-2 lg:col-span-2 tebo-touch-lg tebo-btn-ghost font-bold text-sm py-3">
+            <button wire:click="fireCourse" class="col-span-1 sm:col-span-2 md:col-span-2 tebo-touch-lg tebo-btn-ghost font-bold text-sm py-3">
                 Fire
             </button>
-            <button wire:click="showCart" class="col-span-2 lg:hidden tebo-touch-lg tebo-btn-ghost font-bold text-sm py-3">
+            <button wire:click="showCart" class="col-span-2 md:hidden tebo-touch-lg tebo-btn-ghost font-bold text-sm py-3">
                 Order ({{ $itemCount }})
             </button>
         </div>

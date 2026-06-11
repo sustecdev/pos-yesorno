@@ -134,7 +134,6 @@ class OrderBuilder extends Component
 
         $this->order->refresh()->load('items.modifiers');
         $this->selectedMenuItemId = null;
-        $this->activePanel = 'cart';
         $this->dispatch('order-updated');
     }
 
