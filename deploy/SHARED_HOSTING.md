@@ -15,8 +15,8 @@ For Hostinger (or similar) **shared hosting**: no root/sudo, no Node, no long-ru
 └── ...
 ```
 
-**Domain:** `https://yesorno.plateos.site`  
-**Do not** use `/public` in the URL.
+**Domain:** `https://pos.yesorno.bar`  
+**Do not** use `/public` in the URL — use `https://pos.yesorno.bar/login`.
 
 ---
 
