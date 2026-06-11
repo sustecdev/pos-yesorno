@@ -9,6 +9,7 @@ on:
       - 'app/Console/Commands/ClearOperationalData.php'
       - 'app/Services/OperationalDataCleaner.php'
       - 'deploy/vps-update.sh'
+      - 'database/seeders/TeboOSSeeder.php'
 
 jobs:
   deploy:
@@ -25,4 +26,4 @@ jobs:
           sudo apt-get install -y -qq sshpass
           sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
             "${VPS_USER}@${VPS_HOST}" \
-            'cd /var/www/teboos && git pull origin main && php artisan tebo:clear-data --force && chown -R www-data:www-data storage bootstrap/cache public/build && php artisan config:cache && php artisan route:cache && php artisan view:cache && echo DEPLOY_OK'
+            'cd /var/www/teboos && git pull origin main && php artisan db:seed --class=TeboOSSeeder --force && chown -R www-data:www-data storage bootstrap/cache public/build && php artisan config:cache && php artisan route:cache && php artisan view:cache && echo DEPLOY_OK'

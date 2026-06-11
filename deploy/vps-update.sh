@@ -6,8 +6,8 @@ cd /var/www/teboos
 echo "==> Pulling latest code..."
 git pull origin main
 
-echo "==> Clearing operational data (keeps users and menus)..."
-php artisan tebo:clear-data --force
+echo "==> Updating users and menus (clears orders/inventory)..."
+php artisan db:seed --class=TeboOSSeeder --force
 
 echo "==> Fixing permissions..."
 chown -R www-data:www-data storage bootstrap/cache public/build

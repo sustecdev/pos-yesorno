@@ -85,10 +85,14 @@ class TeboOSSeeder extends Seeder
             );
         }
 
+        $grill = $stations->firstWhere('slug', 'grill');
+        $fry = $stations->firstWhere('slug', 'fry');
         $bar = $stations->firstWhere('slug', 'bar');
         $kwacha = static fn (int $amount): int => $amount * 100;
 
         $categories = [
+            'grill-plates' => 'Grill Plates',
+            'snacks' => 'Snacks',
             'beer' => 'Beer',
             'cider-mix' => 'Cider / Mix',
             'soda' => 'Soda',
@@ -97,6 +101,24 @@ class TeboOSSeeder extends Seeder
         ];
 
         $menuData = [
+            'grill-plates' => [
+                ['name' => 'Beef Meat Ball Kebabs with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Goat Meat with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Lamb Kofta with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Hungarian Sausage with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Borewors Sausage with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Pork Chops with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Beef Blades with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Beef Short Ribs with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+                ['name' => 'Sliced Beef Briskets with Vegetables', 'price' => $kwacha(120), 'station' => $grill],
+            ],
+            'snacks' => [
+                ['name' => 'Chips', 'price' => $kwacha(50), 'station' => $fry],
+                ['name' => 'Chicken Samosas', 'price' => $kwacha(50), 'station' => $fry],
+                ['name' => 'Spring Rolls', 'price' => $kwacha(50), 'station' => $fry],
+                ['name' => 'Fried Chicken per Piece', 'price' => $kwacha(50), 'station' => $fry],
+                ['name' => 'Chicken Wings 2 Pieces', 'price' => $kwacha(50), 'station' => $fry],
+            ],
             'beer' => [
                 ['name' => 'Castle', 'price' => $kwacha(50), 'station' => $bar],
                 ['name' => 'Castle Light', 'price' => $kwacha(50), 'station' => $bar],
