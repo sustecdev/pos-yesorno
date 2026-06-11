@@ -25,8 +25,10 @@ For Hostinger (or similar) **shared hosting**: no root/sudo, no Node, no long-ru
 | Setting | Value |
 |---------|--------|
 | PHP version | **8.2** or **8.3** |
-| Document root | `public_html/yesorno` (Laravel root, **not** `yesorno/public`) |
-| SSL | Enable Let's Encrypt for `yesorno.plateos.site` |
+| Document root | **`public_html/public`** (recommended) — see [DOCROOT-PUBLIC.md](DOCROOT-PUBLIC.md) |
+| SSL | Enable Let's Encrypt for `pos.yesorno.bar` |
+
+> **404 on /login?** Your document root is probably wrong. Set it to the `public/` folder and **remove** any root `.htaccess`.
 
 ---
 
