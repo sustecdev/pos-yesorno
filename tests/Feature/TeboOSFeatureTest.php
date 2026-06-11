@@ -23,6 +23,7 @@ use App\Livewire\Waiter\OrderBuilder;
 use App\Models\DiningTable;
 use App\Models\InventoryItem;
 use App\Models\KitchenAlert;
+use App\Models\KitchenStation;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
 use App\Models\Order;
@@ -58,25 +59,23 @@ class TeboOSFeatureTest extends TestCase
 
     public function test_each_role_can_login_and_reach_dashboard(): void
     {
-        $routes = [
-            'admin' => 'admin.dashboard',
-            'manager' => 'admin.dashboard',
-            'waiter' => 'waiter.floor',
-            'kitchen' => 'kitchen.kds',
-            'cashier' => 'cashier.terminal',
-            'host' => 'host.reservations',
+        $accounts = [
+            'admin' => ['email' => 'admin@yesorno.bar', 'password' => 'admin@2026', 'route' => 'admin.dashboard', 'workspace' => true],
+            'waiter' => ['email' => 'waiter@yesorno.bar', 'password' => 'waiter@2026', 'route' => 'waiter.floor', 'workspace' => false],
+            'kitchen' => ['email' => 'kitchen@yesorno.bar', 'password' => 'kitchen@2026', 'route' => 'kitchen.kds', 'workspace' => false],
+            'cashier' => ['email' => 'cashier@yesorno.bar', 'password' => 'cashier@2026', 'route' => 'cashier.terminal', 'workspace' => false],
         ];
 
-        foreach ($routes as $role => $route) {
+        foreach ($accounts as $role => $account) {
             $component = Livewire::test(Login::class)
-                ->set('email', "{$role}@teboos.com")
-                ->set('password', 'password')
+                ->set('email', $account['email'])
+                ->set('password', $account['password'])
                 ->call('login');
 
-            if (in_array($role, ['admin', 'manager'], true)) {
+            if ($account['workspace']) {
                 $component->assertRedirect(route('workspace.select'));
             } else {
-                $component->assertRedirect(route($route));
+                $component->assertRedirect(route($account['route']));
             }
         }
     }
@@ -85,7 +84,7 @@ class TeboOSFeatureTest extends TestCase
     {
         $admin = $this->user('admin');
 
-        foreach (['admin', 'waiter', 'kitchen', 'cashier', 'host'] as $workspace) {
+        foreach (['admin', 'waiter', 'kitchen', 'cashier'] as $workspace) {
             Livewire::actingAs($admin)
                 ->test(SelectWorkspace::class)
                 ->call('select', $workspace)
@@ -94,7 +93,6 @@ class TeboOSFeatureTest extends TestCase
                     'waiter' => 'waiter.floor',
                     'kitchen' => 'kitchen.kds',
                     'cashier' => 'cashier.terminal',
-                    'host' => 'host.reservations',
                 }));
 
             $this->actingAs($admin)
@@ -103,7 +101,6 @@ class TeboOSFeatureTest extends TestCase
                     'waiter' => 'waiter.floor',
                     'kitchen' => 'kitchen.kds',
                     'cashier' => 'cashier.terminal',
-                    'host' => 'host.reservations',
                 }))
                 ->assertOk();
         }
@@ -141,19 +138,19 @@ class TeboOSFeatureTest extends TestCase
     {
         $waiter = $this->user('waiter');
         $table = DiningTable::query()->where('number', '1')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
-        $soup = MenuItem::query()->where('name', 'Soup of the Day')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
+        $cola = MenuItem::query()->where('name', 'Coca Cola')->firstOrFail();
 
         $component = Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen')
             ->assertSet('order.status', OrderStatus::Sent)
             ->call('markRush')
             ->assertSet('order.is_rush', true)
             ->call('fireCourse')
             ->assertSet('order.course_number', 2)
-            ->call('quickAddOrConfigure', $soup->id)
+            ->call('quickAddOrConfigure', $cola->id)
             ->call('sendToCashier')
             ->assertSet('order.status', OrderStatus::Served);
 
@@ -170,11 +167,11 @@ class TeboOSFeatureTest extends TestCase
     {
         $waiter = $this->user('waiter');
         $table = DiningTable::query()->where('number', '6')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen')
             ->call('openBillPanel')
             ->assertSet('showBillPanel', true)
@@ -194,11 +191,11 @@ class TeboOSFeatureTest extends TestCase
     {
         $waiter = $this->user('waiter');
         $table = DiningTable::query()->where('number', '8')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen')
             ->call('openBillPanel')
             ->set('discountType', 'percent')
@@ -215,11 +212,11 @@ class TeboOSFeatureTest extends TestCase
     {
         $waiter = $this->user('waiter');
         $table = DiningTable::query()->where('number', '2')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         $component = Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen');
 
         $itemId = $component->get('order')->items->first()->id;
@@ -239,11 +236,11 @@ class TeboOSFeatureTest extends TestCase
         $waiter = $this->user('waiter');
         $kitchen = $this->user('kitchen');
         $table = DiningTable::query()->where('number', '5')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         $component = Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen');
 
         $itemId = $component->get('order')->items->first()->id;
@@ -275,16 +272,17 @@ class TeboOSFeatureTest extends TestCase
         $waiter = $this->user('waiter');
         $kitchen = $this->user('kitchen');
         $table = DiningTable::query()->where('number', '8')->firstOrFail();
-        $garlicBread = MenuItem::query()->where('name', 'Garlic Bread')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
+        $barStation = KitchenStation::query()->where('slug', 'bar')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $garlicBread->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen');
 
-        $this->actingAs($kitchen)
-            ->get(route('kitchen.kds'))
-            ->assertOk()
+        Livewire::actingAs($kitchen)
+            ->test(KdsBoard::class)
+            ->call('switchStation', $barStation->id)
             ->assertSee('T'.$table->number);
     }
 
@@ -293,11 +291,11 @@ class TeboOSFeatureTest extends TestCase
         $waiter = $this->user('waiter');
         $kitchen = $this->user('kitchen');
         $table = DiningTable::query()->where('number', '3')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen');
 
         $item = Order::query()->where('dining_table_id', $table->id)->first()->items()->first();
@@ -329,11 +327,11 @@ class TeboOSFeatureTest extends TestCase
         $waiter = $this->user('waiter');
         $kitchen = $this->user('kitchen');
         $table = DiningTable::query()->where('number', '4')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen')
             ->call('markRush');
 
@@ -371,11 +369,11 @@ class TeboOSFeatureTest extends TestCase
         $waiter = $this->user('waiter');
         $cashier = $this->user('cashier');
         $table = DiningTable::query()->where('number', '4')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen')
             ->call('sendToCashier');
 
@@ -403,11 +401,11 @@ class TeboOSFeatureTest extends TestCase
         $waiter = $this->user('waiter');
         $cashier = $this->user('cashier');
         $table = DiningTable::query()->where('number', '5')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen')
             ->call('sendToCashier');
 
@@ -432,7 +430,8 @@ class TeboOSFeatureTest extends TestCase
 
     public function test_host_reservation_lifecycle(): void
     {
-        $host = $this->user('host');
+        $host = User::factory()->create();
+        $host->assignRole('host');
         $table = DiningTable::query()->where('number', '6')->firstOrFail();
 
         Livewire::actingAs($host)
@@ -526,11 +525,11 @@ class TeboOSFeatureTest extends TestCase
         $admin = $this->user('admin');
         $waiter = $this->user('waiter');
         $table = DiningTable::query()->where('number', '1')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen');
 
         $order = Order::query()->where('waiter_id', $waiter->id)->first();
@@ -652,11 +651,11 @@ class TeboOSFeatureTest extends TestCase
 
         $waiter = $this->user('waiter');
         $table = DiningTable::query()->where('number', '9')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id);
+            ->call('quickAddOrConfigure', $castle->id);
 
         $order = Order::query()->where('dining_table_id', $table->id)->firstOrFail();
         $expectedTax = (int) round($order->subtotal_cents * 0.16);
@@ -675,11 +674,11 @@ class TeboOSFeatureTest extends TestCase
         $waiter = $this->user('waiter');
         $cashier = $this->user('cashier');
         $table = DiningTable::query()->where('number', '3')->firstOrFail();
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->firstOrFail();
+        $castle = MenuItem::query()->where('name', 'Castle')->firstOrFail();
 
         Livewire::actingAs($waiter)
             ->test(OrderBuilder::class, ['table' => $table])
-            ->call('quickAddOrConfigure', $salad->id)
+            ->call('quickAddOrConfigure', $castle->id)
             ->call('sendToKitchen')
             ->call('sendToCashier');
 

@@ -13,8 +13,6 @@ use App\Models\KitchenNotificationSetting;
 use App\Models\KitchenStation;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
-use App\Models\Modifier;
-use App\Models\ModifierGroup;
 use App\Models\Recipe;
 use App\Models\RestaurantSetting;
 use App\Models\Supplier;
@@ -38,25 +36,23 @@ class TeboOSSeeder extends Seeder
         RestaurantSetting::set('location', 'Plot 123, Cairo Road');
         RestaurantSetting::set('city', 'Lusaka');
         RestaurantSetting::set('phone', '+260 211 123 456');
-        RestaurantSetting::set('email', 'info@teboos.com');
+        RestaurantSetting::set('email', 'info@yesorno.bar');
         RestaurantSetting::set('tax_id', '1001234567');
         RestaurantSetting::set('tax_rate', '0.16');
         RestaurantSetting::set('tax_enabled', '1');
         RestaurantSetting::set('tax_label', 'VAT');
 
         $users = [
-            ['name' => 'Admin User', 'email' => 'admin@teboos.com', 'role' => 'admin'],
-            ['name' => 'Manager Mike', 'email' => 'manager@teboos.com', 'role' => 'manager'],
-            ['name' => 'Waiter Wanda', 'email' => 'waiter@teboos.com', 'role' => 'waiter'],
-            ['name' => 'Chef Carlos', 'email' => 'kitchen@teboos.com', 'role' => 'kitchen'],
-            ['name' => 'Cashier Chris', 'email' => 'cashier@teboos.com', 'role' => 'cashier'],
-            ['name' => 'Host Hannah', 'email' => 'host@teboos.com', 'role' => 'host'],
+            ['name' => 'Admin', 'email' => 'admin@yesorno.bar', 'role' => 'admin', 'password' => 'admin@2026'],
+            ['name' => 'Waiter', 'email' => 'waiter@yesorno.bar', 'role' => 'waiter', 'password' => 'waiter@2026'],
+            ['name' => 'Kitchen', 'email' => 'kitchen@yesorno.bar', 'role' => 'kitchen', 'password' => 'kitchen@2026'],
+            ['name' => 'Cashier', 'email' => 'cashier@yesorno.bar', 'role' => 'cashier', 'password' => 'cashier@2026'],
         ];
 
         foreach ($users as $data) {
             $user = User::query()->updateOrCreate(
                 ['email' => $data['email']],
-                ['name' => $data['name'], 'password' => Hash::make('password')]
+                ['name' => $data['name'], 'password' => Hash::make($data['password'])]
             );
             $user->syncRoles([$data['role']]);
         }
@@ -93,39 +89,46 @@ class TeboOSSeeder extends Seeder
             );
         }
 
-        $grill = $stations->firstWhere('slug', 'grill');
-        $fry = $stations->firstWhere('slug', 'fry');
-        $cold = $stations->firstWhere('slug', 'cold');
         $bar = $stations->firstWhere('slug', 'bar');
+        $kwacha = static fn (int $amount): int => $amount * 100;
 
         $categories = [
-            'starters' => 'Starters',
-            'mains' => 'Mains',
-            'desserts' => 'Desserts',
-            'drinks' => 'Drinks',
+            'beer' => 'Beer',
+            'cider-mix' => 'Cider / Mix',
+            'soda' => 'Soda',
+            'juice' => 'Juice',
+            'water' => 'Water',
         ];
 
         $menuData = [
-            'starters' => [
-                ['name' => 'Caesar Salad', 'price' => 1200, 'station' => $cold],
-                ['name' => 'Soup of the Day', 'price' => 900, 'station' => $cold],
-                ['name' => 'Garlic Bread', 'price' => 700, 'station' => $grill],
+            'beer' => [
+                ['name' => 'Castle', 'price' => $kwacha(50), 'station' => $bar],
+                ['name' => 'Castle Light', 'price' => $kwacha(50), 'station' => $bar],
+                ['name' => 'Corona', 'price' => $kwacha(60), 'station' => $bar],
+                ['name' => 'Flying Fish', 'price' => $kwacha(50), 'station' => $bar],
+                ['name' => 'Mosi', 'price' => $kwacha(40), 'station' => $bar],
             ],
-            'mains' => [
-                ['name' => 'Grilled Salmon', 'price' => 2800, 'station' => $grill],
-                ['name' => 'Ribeye Steak', 'price' => 3500, 'station' => $grill],
-                ['name' => 'Chicken Burger', 'price' => 1800, 'station' => $grill],
-                ['name' => 'Fish & Chips', 'price' => 2200, 'station' => $fry],
-                ['name' => 'Pasta Carbonara', 'price' => 1900, 'station' => $grill],
+            'cider-mix' => [
+                ['name' => 'Savanna', 'price' => $kwacha(60), 'station' => $bar],
+                ['name' => 'Hunters Dry', 'price' => $kwacha(60), 'station' => $bar],
+                ['name' => 'Hunters Gold', 'price' => $kwacha(60), 'station' => $bar],
+                ['name' => 'Brutal Fruit Can', 'price' => $kwacha(70), 'station' => $bar],
+                ['name' => 'Belgravia Gin & Dry Lemon', 'price' => $kwacha(70), 'station' => $bar],
             ],
-            'desserts' => [
-                ['name' => 'Chocolate Lava Cake', 'price' => 1100, 'station' => $grill],
-                ['name' => 'Ice Cream Sundae', 'price' => 900, 'station' => $cold],
+            'soda' => [
+                ['name' => 'Coca Cola', 'price' => $kwacha(25), 'station' => $bar],
+                ['name' => 'Coca Cola Zero', 'price' => $kwacha(25), 'station' => $bar],
+                ['name' => 'Fanta Orange', 'price' => $kwacha(25), 'station' => $bar],
+                ['name' => 'Mountain Dew', 'price' => $kwacha(25), 'station' => $bar],
+                ['name' => 'Sprite', 'price' => $kwacha(25), 'station' => $bar],
             ],
-            'drinks' => [
-                ['name' => 'Fresh Lemonade', 'price' => 600, 'station' => $bar],
-                ['name' => 'Espresso', 'price' => 400, 'station' => $bar],
-                ['name' => 'House Wine', 'price' => 800, 'station' => $bar],
+            'juice' => [
+                ['name' => 'Fruiticana Pineapple', 'price' => $kwacha(25), 'station' => $bar],
+                ['name' => 'Fruiticana Mix Fruit', 'price' => $kwacha(25), 'station' => $bar],
+                ['name' => 'Fruiticana Orange', 'price' => $kwacha(25), 'station' => $bar],
+            ],
+            'water' => [
+                ['name' => 'Vatra', 'price' => $kwacha(10), 'station' => $bar],
             ],
         ];
 
@@ -148,27 +151,17 @@ class TeboOSSeeder extends Seeder
             }
         }
 
-        $cooking = ModifierGroup::query()->updateOrCreate(['name' => 'Cooking'], ['max_selections' => 1]);
-        foreach (['Rare', 'Medium', 'Well Done'] as $mod) {
-            Modifier::query()->updateOrCreate(
-                ['modifier_group_id' => $cooking->id, 'name' => $mod]
-            );
-        }
-
-        MenuItem::query()->where('name', 'Ribeye Steak')->first()
-            ?->modifierGroups()->syncWithoutDetaching([$cooking->id]);
-
         $supplier = Supplier::query()->updateOrCreate(
-            ['name' => 'Fresh Farms Co'],
-            ['contact_name' => 'John Supplier', 'phone' => '555-0100']
+            ['name' => 'Beverage Distributors Ltd'],
+            ['contact_name' => 'Supply Desk', 'phone' => '+260 211 000 000']
         );
 
         $inventory = [
-            ['name' => 'Salmon Fillet', 'sku' => 'SAL-001', 'qty' => 50, 'reorder' => 10, 'cost' => 800],
-            ['name' => 'Ribeye Cut', 'sku' => 'RIB-001', 'qty' => 30, 'reorder' => 8, 'cost' => 1200],
-            ['name' => 'Chicken Breast', 'sku' => 'CHK-001', 'qty' => 40, 'reorder' => 10, 'cost' => 400],
-            ['name' => 'Potatoes', 'sku' => 'POT-001', 'qty' => 100, 'reorder' => 20, 'cost' => 50],
-            ['name' => 'Olive Oil', 'sku' => 'OIL-001', 'qty' => 20, 'reorder' => 5, 'cost' => 300],
+            ['name' => 'Castle Lager Case', 'sku' => 'BEER-CAS-001', 'qty' => 48, 'reorder' => 12, 'cost' => $kwacha(35), 'unit' => 'case'],
+            ['name' => 'Mosi Lager Case', 'sku' => 'BEER-MOS-001', 'qty' => 36, 'reorder' => 12, 'cost' => $kwacha(28), 'unit' => 'case'],
+            ['name' => 'Coca Cola Crate', 'sku' => 'SODA-CC-001', 'qty' => 24, 'reorder' => 6, 'cost' => $kwacha(18), 'unit' => 'crate'],
+            ['name' => 'Vatra Water Case', 'sku' => 'WAT-VAT-001', 'qty' => 60, 'reorder' => 15, 'cost' => $kwacha(7), 'unit' => 'case'],
+            ['name' => 'Fruiticana Carton', 'sku' => 'JUI-FRU-001', 'qty' => 30, 'reorder' => 8, 'cost' => $kwacha(18), 'unit' => 'carton'],
         ];
 
         foreach ($inventory as $inv) {
@@ -180,17 +173,17 @@ class TeboOSSeeder extends Seeder
                     'quantity' => $inv['qty'],
                     'reorder_level' => $inv['reorder'],
                     'unit_cost_cents' => $inv['cost'],
-                    'unit' => 'kg',
+                    'unit' => $inv['unit'],
                 ]
             );
         }
 
-        $salmon = MenuItem::query()->where('name', 'Grilled Salmon')->first();
-        $salmonInv = InventoryItem::query()->where('sku', 'SAL-001')->first();
-        if ($salmon && $salmonInv) {
+        $castle = MenuItem::query()->where('name', 'Castle')->first();
+        $castleStock = InventoryItem::query()->where('sku', 'BEER-CAS-001')->first();
+        if ($castle && $castleStock) {
             Recipe::query()->updateOrCreate(
-                ['menu_item_id' => $salmon->id, 'inventory_item_id' => $salmonInv->id],
-                ['quantity_required' => 0.25]
+                ['menu_item_id' => $castle->id, 'inventory_item_id' => $castleStock->id],
+                ['quantity_required' => 1]
             );
         }
 
@@ -221,8 +214,8 @@ class TeboOSSeeder extends Seeder
                 'order_number' => 'DEMO-CASH-1',
                 'table' => '10',
                 'items' => [
-                    ['name' => 'Caesar Salad', 'qty' => 2],
-                    ['name' => 'House Wine', 'qty' => 2],
+                    ['name' => 'Castle', 'qty' => 2],
+                    ['name' => 'Savanna', 'qty' => 2],
                 ],
                 'bill' => true,
             ],
@@ -230,9 +223,9 @@ class TeboOSSeeder extends Seeder
                 'order_number' => 'DEMO-CASH-2',
                 'table' => '11',
                 'items' => [
-                    ['name' => 'Ribeye Steak', 'qty' => 2],
-                    ['name' => 'Garlic Bread', 'qty' => 1],
-                    ['name' => 'Fresh Lemonade', 'qty' => 2],
+                    ['name' => 'Corona', 'qty' => 2],
+                    ['name' => 'Coca Cola', 'qty' => 3],
+                    ['name' => 'Fanta Orange', 'qty' => 2],
                 ],
                 'bill' => true,
             ],
@@ -240,8 +233,8 @@ class TeboOSSeeder extends Seeder
                 'order_number' => 'DEMO-CASH-3',
                 'table' => '12',
                 'items' => [
-                    ['name' => 'Fish & Chips', 'qty' => 1],
-                    ['name' => 'Espresso', 'qty' => 2],
+                    ['name' => 'Mosi', 'qty' => 2],
+                    ['name' => 'Vatra', 'qty' => 3],
                 ],
                 'bill' => false,
             ],

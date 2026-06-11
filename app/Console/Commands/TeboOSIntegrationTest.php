@@ -59,9 +59,9 @@ class TeboOSIntegrationTest extends Command
         $this->runCheck('Restaurant name saved', fn () => RestaurantProfile::get('name') === $restaurantName);
         $this->runCheck('Staff accounts exist', fn () => User::role('admin')->exists() && User::role('waiter')->exists());
 
-        foreach (['admin', 'manager', 'waiter', 'kitchen', 'cashier', 'host'] as $role) {
+        foreach (['admin', 'waiter', 'kitchen', 'cashier'] as $role) {
             $user = User::role($role)->first();
-            $this->runCheck("User role: {$role}", fn () => $user !== null, "{$role}@teboos.com");
+            $this->runCheck("User role: {$role}", fn () => $user !== null, "{$role}@yesorno.bar");
         }
 
         $routes = [
@@ -94,15 +94,15 @@ class TeboOSIntegrationTest extends Command
 
         $this->runCheck('Free dining table available', fn () => $table !== null, "Table {$table?->number}");
 
-        $salad = MenuItem::query()->where('name', 'Caesar Salad')->where('is_available', true)->first()
+        $castle = MenuItem::query()->where('name', 'Castle')->where('is_available', true)->first()
             ?? MenuItem::query()->where('is_available', true)->first();
 
-        $this->runCheck('Menu item available', fn () => $salad !== null, $salad?->name);
+        $this->runCheck('Menu item available', fn () => $castle !== null, $castle?->name);
 
         $order = null;
-        $this->runCheck('Waiter creates order', function () use ($orderService, $waiter, $table, $salad, &$order) {
+        $this->runCheck('Waiter creates order', function () use ($orderService, $waiter, $table, $castle, &$order) {
             $order = $orderService->createForTable($table, $waiter);
-            $orderService->addItem($order, $salad, 1);
+            $orderService->addItem($order, $castle, 1);
             $orderService->sendToKitchen($order);
 
             return $order->fresh()->status === OrderStatus::Sent;

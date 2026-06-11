@@ -1,46 +1,29 @@
 @php
     $itemCount = $order->items->where('status', '!=', 'cancelled')->count();
-    $progressStep = match ($order->status->value) {
-        'draft' => 1,
-        'sent', 'preparing' => 2,
-        'ready' => 3,
-        'served' => 4,
-        default => 1,
-    };
 @endphp
 
 <div class="h-full flex flex-col min-h-0">
-    {{-- Header + back --}}
+    {{-- Compact header (full screen — no layout chrome) --}}
     <div class="waiter-order-header">
-        <div class="flex items-center gap-2 sm:gap-3">
-            <a href="{{ route('waiter.floor') }}" class="tebo-touch-lg tebo-btn-ghost w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shrink-0 flex items-center justify-center">
-                <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('waiter.floor') }}" class="tebo-touch tebo-btn-ghost w-11 h-11 rounded-xl shrink-0 flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
             </a>
             <div class="flex-1 min-w-0">
-                <h2 class="font-display text-2xl sm:text-3xl font-bold truncate">Table {{ $table->number }}</h2>
-                <p class="text-xs sm:text-sm text-tebo-cream/50 truncate">{{ $table->area->name }} · {{ $itemCount }} items</p>
+                <h2 class="font-display text-xl font-bold truncate leading-tight">Table {{ $table->number }}</h2>
+                <p class="text-xs text-tebo-cream/50 truncate">{{ $table->area->name }} · {{ $itemCount }} items · {{ $order->status->label() }}</p>
             </div>
             <div class="text-right shrink-0">
-                <div class="text-xl sm:text-2xl font-bold text-tebo-amber">{{ money($order->total_cents) }}</div>
+                <div class="text-lg font-bold text-tebo-amber">{{ money($order->total_cents) }}</div>
                 @if($order->is_rush)
-                    <span class="text-xs font-bold text-tebo-red">RUSH</span>
+                    <span class="text-[10px] font-bold text-tebo-red">RUSH</span>
                 @endif
             </div>
         </div>
-
-        {{-- Progress bar --}}
-        <div class="flex gap-1.5 mt-2 sm:mt-3 px-1">
-            @foreach(['Order', 'Kitchen', 'Ready', 'Bill'] as $i => $label)
-                <div class="flex-1">
-                    <div class="waiter-progress-step {{ $i + 1 < $progressStep ? 'waiter-progress-step-done' : ($i + 1 === $progressStep ? 'waiter-progress-step-current' : '') }}"></div>
-                    <span class="text-[10px] text-tebo-cream/30 mt-1 block text-center">{{ $label }}</span>
-                </div>
-            @endforeach
-        </div>
     </div>
 
-    {{-- Phone only: toggle menu vs order (tablets 768px+ show both side by side) --}}
-    <div class="md:hidden flex gap-2 mb-2 shrink-0">
+    {{-- Tablet/phone: full-width menu OR order (side-by-side only on large screens) --}}
+    <div class="lg:hidden flex gap-2 mb-2 shrink-0">
         <button wire:click="showMenu" class="flex-1 tebo-tab {{ $activePanel === 'menu' ? 'tebo-tab-active' : 'tebo-tab-inactive' }}">
             Menu
         </button>
@@ -49,17 +32,19 @@
         </button>
     </div>
 
-    <div class="flex-1 min-h-0 flex flex-col md:flex-row gap-3 overflow-hidden">
+    <div class="flex-1 min-h-0 flex flex-col lg:flex-row gap-2 lg:gap-3 overflow-hidden">
         {{-- Menu --}}
-        <div class="flex-1 flex flex-col min-h-0 min-w-0 {{ $activePanel !== 'menu' ? 'hidden md:flex' : 'flex' }}">
-            <input type="search"
-                   wire:model.live.debounce.300ms="search"
-                   placeholder="Search menu…"
-                   class="tebo-input text-base sm:text-lg py-3 sm:py-4 mb-2 sm:mb-3 shrink-0"
-                   inputmode="search"
-                   autocomplete="off">
+        <div class="flex-1 flex flex-col min-h-0 min-w-0 {{ $activePanel !== 'menu' ? 'hidden lg:flex' : 'flex' }}">
+            <div class="waiter-menu-toolbar shrink-0 mb-2">
+                <input type="search"
+                       wire:model.live.debounce.300ms="search"
+                       placeholder="Search menu…"
+                       class="tebo-input text-base py-2.5 shrink-0"
+                       inputmode="search"
+                       autocomplete="off">
+            </div>
 
-            <div class="tablet-category-bar">
+            <div class="tablet-category-bar mb-2">
                 @foreach($categories as $cat)
                     <button wire:click="$set('selectedCategoryId', {{ $cat->id }})"
                         class="tebo-tab {{ $selectedCategoryId === $cat->id ? 'tebo-tab-active' : 'tebo-tab-inactive' }}">
@@ -92,8 +77,8 @@
             </div>
         </div>
 
-        {{-- Cart sidebar --}}
-        <div class="w-full md:w-64 lg:w-72 xl:w-80 shrink-0 flex flex-col min-h-0 {{ $activePanel !== 'cart' ? 'hidden md:flex' : 'flex' }}">
+        {{-- Cart (tab/sheet on tablet, sidebar on large screens) --}}
+        <div class="w-full lg:w-72 xl:w-80 shrink-0 flex flex-col min-h-0 {{ $activePanel !== 'cart' ? 'hidden lg:flex' : 'flex' }}">
             <div class="tebo-card flex-1 flex flex-col min-h-0 overflow-hidden border-tebo-amber/20">
                 <div class="p-4 border-b border-tebo-border flex items-center justify-between shrink-0">
                     <h3 class="font-display font-bold text-lg">Order</h3>
@@ -142,7 +127,7 @@
 
     {{-- Floating cart (portrait, on menu tab) --}}
     @if($activePanel === 'menu' && $itemCount > 0)
-        <button wire:click="showCart" class="waiter-fab md:hidden">
+        <button wire:click="showCart" class="waiter-fab lg:hidden">
             <span>{{ $itemCount }}</span>
             <span>View order</span>
             <span class="font-bold">{{ money($order->total_cents, false) }}</span>
@@ -151,24 +136,21 @@
 
     {{-- Action bar --}}
     <div class="waiter-order-actions">
-        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+        <div class="waiter-order-actions-grid">
             <button wire:click="sendToKitchen" wire:loading.attr="disabled"
-                class="col-span-1 sm:col-span-2 md:col-span-3 tebo-touch-lg tebo-btn-primary text-base sm:text-lg font-bold py-3 sm:py-4 rounded-2xl">
+                class="tebo-touch tebo-btn-primary font-bold py-3 rounded-xl">
                 <span wire:loading.remove wire:target="sendToKitchen">Kitchen</span>
                 <span wire:loading wire:target="sendToKitchen">…</span>
             </button>
             <button wire:click="openBillPanel"
-                class="col-span-1 sm:col-span-2 md:col-span-3 tebo-touch-lg rounded-2xl font-bold py-3 sm:py-4 border-2 border-tebo-amber/50 text-tebo-amber bg-tebo-amber/10">
+                class="tebo-touch rounded-xl font-bold py-3 border-2 border-tebo-amber/50 text-tebo-amber bg-tebo-amber/10">
                 Bill
             </button>
-            <button wire:click="markRush" class="col-span-1 sm:col-span-2 md:col-span-2 tebo-touch-lg tebo-btn-ghost text-tebo-red border-tebo-red/30 font-bold text-sm py-3">
+            <button wire:click="markRush" class="tebo-touch tebo-btn-ghost text-tebo-red border-tebo-red/30 font-bold text-sm py-3 rounded-xl">
                 Rush
             </button>
-            <button wire:click="fireCourse" class="col-span-1 sm:col-span-2 md:col-span-2 tebo-touch-lg tebo-btn-ghost font-bold text-sm py-3">
+            <button wire:click="fireCourse" class="tebo-touch tebo-btn-ghost font-bold text-sm py-3 rounded-xl">
                 Fire
-            </button>
-            <button wire:click="showCart" class="col-span-2 md:hidden tebo-touch-lg tebo-btn-ghost font-bold text-sm py-3">
-                Order ({{ $itemCount }})
             </button>
         </div>
     </div>

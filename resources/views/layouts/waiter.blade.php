@@ -17,18 +17,20 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-dvh bg-tebo-dark text-tebo-cream font-sans antialiased waiter-body"
+<body class="min-h-dvh bg-tebo-dark text-tebo-cream font-sans antialiased waiter-body {{ request()->routeIs('waiter.order') ? 'waiter-body-order' : '' }}"
       x-data="teboApp()"
       x-on:tebo-toast.window="showToast($event.detail)">
 
-    <header class="waiter-header sticky top-0 z-50 bg-tebo-darker/95 backdrop-blur border-b border-tebo-border">
-        <div class="flex items-center justify-between px-4 py-3 gap-3" style="padding-top: max(0.75rem, env(safe-area-inset-top))">
-            <a href="{{ route('waiter.floor') }}" class="flex items-center gap-2 shrink-0">
-                <span class="font-display text-xl font-bold text-tebo-amber truncate max-w-[10rem]">{{ $restaurantName }}</span>
-            </a>
-            <span class="text-sm text-tebo-cream/50 truncate">{{ auth()->user()->name }}</span>
-        </div>
-    </header>
+    @unless(request()->routeIs('waiter.order'))
+        <header class="waiter-header sticky top-0 z-50 bg-tebo-darker/95 backdrop-blur border-b border-tebo-border">
+            <div class="flex items-center justify-between px-4 py-3 gap-3" style="padding-top: max(0.75rem, env(safe-area-inset-top))">
+                <a href="{{ route('waiter.floor') }}" class="flex items-center gap-2 shrink-0">
+                    <span class="font-display text-xl font-bold text-tebo-amber truncate max-w-[10rem]">{{ $restaurantName }}</span>
+                </a>
+                <span class="text-sm text-tebo-cream/50 truncate">{{ auth()->user()->name }}</span>
+            </div>
+        </header>
+    @endunless
 
     <main class="waiter-main {{ request()->routeIs('waiter.order') ? 'waiter-main-order' : '' }}">
         {{ $slot }}
