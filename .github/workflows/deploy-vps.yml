@@ -1,0 +1,25 @@
+name: Deploy VPS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-vps.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy to production VPS
+        env:
+          VPS_HOST: 187.124.210.108
+          VPS_USER: root
+          VPS_PASSWORD: TeboOS-Vps-Deploy-2026
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq sshpass
+          sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
+            "${VPS_USER}@${VPS_HOST}" \
+            'cd /var/www/teboos && git pull origin main && BROADCAST_CONNECTION=log php artisan migrate:fresh --seed --force && chown -R www-data:www-data storage bootstrap/cache public/build && php artisan config:cache && php artisan route:cache && php artisan view:cache && echo DEPLOY_OK'
