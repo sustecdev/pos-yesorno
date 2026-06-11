@@ -10,6 +10,7 @@ on:
       - 'app/Services/OperationalDataCleaner.php'
       - 'deploy/vps-update.sh'
       - 'database/seeders/TeboOSSeeder.php'
+      - 'resources/views/livewire/waiter/floor-plan.blade.php'
 
 jobs:
   deploy:

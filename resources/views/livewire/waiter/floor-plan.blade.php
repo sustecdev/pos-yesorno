@@ -54,7 +54,7 @@
     @endif
 
     {{-- Table grid --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2.5 md:gap-3">
         @forelse($tables as $table)
             @php
                 $order = $table->activeOrder;

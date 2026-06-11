@@ -73,17 +73,24 @@ class TeboOSSeeder extends Seeder
 
         $area = DiningArea::query()->updateOrCreate(['name' => 'Main Dining'], ['sort_order' => 1]);
 
-        for ($i = 1; $i <= 12; $i++) {
+        $tableCount = 32;
+
+        for ($i = 1; $i <= $tableCount; $i++) {
             DiningTable::query()->updateOrCreate(
                 ['dining_area_id' => $area->id, 'number' => (string) $i],
                 [
                     'seats' => $i % 3 === 0 ? 6 : 4,
                     'status' => TableStatus::Free,
-                    'position_x' => ($i % 4) * 2,
+                    'position_x' => (($i - 1) % 4) * 2,
                     'position_y' => intdiv($i - 1, 4) * 2,
                 ]
             );
         }
+
+        DiningTable::query()
+            ->where('dining_area_id', $area->id)
+            ->whereNotIn('number', collect(range(1, $tableCount))->map(fn ($n) => (string) $n))
+            ->delete();
 
         $grill = $stations->firstWhere('slug', 'grill');
         $fry = $stations->firstWhere('slug', 'fry');
