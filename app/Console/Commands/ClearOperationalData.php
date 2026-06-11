@@ -13,7 +13,7 @@ class ClearOperationalData extends Command
 
     public function handle(OperationalDataCleaner $cleaner): int
     {
-        if (! $this->option('force') && ! $this->confirm('Delete all orders, reservations, inventory, and activity logs?')) {
+        if (! $this->option('force') && ! $this->confirm('Delete all orders, reservations, inventory, and activity logs? Run deploy/backup-db.sh on the server first.')) {
             return self::SUCCESS;
         }
 

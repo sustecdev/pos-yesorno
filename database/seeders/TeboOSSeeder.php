@@ -11,7 +11,6 @@ use App\Models\MenuCategory;
 use App\Models\MenuItem;
 use App\Models\RestaurantSetting;
 use App\Models\User;
-use App\Services\OperationalDataCleaner;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -20,8 +19,6 @@ class TeboOSSeeder extends Seeder
 {
     public function run(): void
     {
-        app(OperationalDataCleaner::class)->clear();
-
         $roles = ['admin', 'manager', 'waiter', 'kitchen', 'cashier', 'host'];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
