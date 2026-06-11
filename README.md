@@ -55,19 +55,11 @@ Open http://localhost:8000
 | Cashier | cashier@teboos.com | password |
 | Host | host@teboos.com | password |
 
-## Production deploy (Hetzner VPS)
-
-Full guide: **[deploy/HETZNER.md](deploy/HETZNER.md)**
-
-- nginx document root → `public/` (URL: `https://pos.yesorno.bar/login`)
-- PHP 8.2+, MySQL, Let's Encrypt SSL
-- Config: `deploy/hetzner-nginx.conf`
-
 ## Shared hosting deploy
 
-Full guide: **[deploy/SHARED_HOSTING.md](deploy/SHARED_HOSTING.md)** · [DOCROOT-PUBLIC.md](deploy/DOCROOT-PUBLIC.md)
+Full guide: **[deploy/SHARED_HOSTING.md](deploy/SHARED_HOSTING.md)**
 
-Quick steps for shared hosting:
+Quick steps for `yesorno.plateos.site` on Hostinger shared hosting:
 
 1. hPanel → PHP **8.3**, document root `public_html/yesorno`
 2. `git pull` into `~/domains/plateos.site/public_html/yesorno`

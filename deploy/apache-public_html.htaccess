@@ -1,19 +1,27 @@
-# Same as deploy/apache-laravel-root.htaccess (kept for backwards compatibility).
-# Prefer DOCROOT-PUBLIC.md — set hPanel document root to the public/ folder.
+# Use when the web root is the Laravel project folder (e.g. public_html/yesorno).
+# Copy to the Laravel root as .htaccess:
+#   cd ~/domains/plateos.site/public_html/yesorno
+#   cp deploy/apache-public_html.htaccess .htaccess
+#
+# URLs stay as https://yesorno.plateos.site/login (no /public in the address bar).
 
 <IfModule mod_rewrite.c>
-    Options -MultiViews -Indexes +FollowSymLinks
     RewriteEngine On
 
-    RewriteCond %{THE_REQUEST} \s/+public[/\s] [NC]
-    RewriteRule ^public/?(.*)$ /$1 [R=301,L]
-
+    # Block direct web access to Laravel internals
     RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/|$) - [F,L]
     RewriteRule ^\.env - [F,L]
+    RewriteRule ^composer\.(json|lock)$ - [F,L]
+    RewriteRule ^artisan$ - [F,L]
+    RewriteRule ^phpunit\.xml$ - [F,L]
 
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
+    # Serve real files from /public without exposing /public in the URL
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -d
+    RewriteRule ^(.*)$ public/$1 [L]
 
+    # Everything else goes through Laravel's front controller
+    RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^ public/index.php [L]
 </IfModule>

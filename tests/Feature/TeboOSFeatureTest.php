@@ -56,15 +56,6 @@ class TeboOSFeatureTest extends TestCase
         $this->get('/login')->assertOk();
     }
 
-    public function test_public_prefix_is_stripped_from_urls(): void
-    {
-        $this->get('/public/login')
-            ->assertRedirect('/login');
-
-        $this->get('/public')
-            ->assertRedirect('/');
-    }
-
     public function test_each_role_can_login_and_reach_dashboard(): void
     {
         $routes = [

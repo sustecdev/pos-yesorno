@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,10 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($appUrl = config('app.url')) {
-            URL::forceRootUrl(rtrim($appUrl, '/'));
-        }
-
         View::composer('*', function ($view): void {
             $view->with('restaurantName', restaurant_name());
         });
