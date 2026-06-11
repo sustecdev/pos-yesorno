@@ -2,22 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Enums\OrderItemStatus;
-use App\Enums\OrderStatus;
 use App\Enums\TableStatus;
-use App\Models\Order;
 use App\Models\DiningArea;
 use App\Models\DiningTable;
-use App\Models\InventoryItem;
 use App\Models\KitchenNotificationSetting;
 use App\Models\KitchenStation;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
-use App\Models\Recipe;
 use App\Models\RestaurantSetting;
-use App\Models\Supplier;
 use App\Models\User;
-use App\Services\OrderService;
+use App\Services\OperationalDataCleaner;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -26,6 +20,8 @@ class TeboOSSeeder extends Seeder
 {
     public function run(): void
     {
+        app(OperationalDataCleaner::class)->clear();
+
         $roles = ['admin', 'manager', 'waiter', 'kitchen', 'cashier', 'host'];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
@@ -151,140 +147,5 @@ class TeboOSSeeder extends Seeder
             }
         }
 
-        $supplier = Supplier::query()->updateOrCreate(
-            ['name' => 'Beverage Distributors Ltd'],
-            ['contact_name' => 'Supply Desk', 'phone' => '+260 211 000 000']
-        );
-
-        $inventory = [
-            ['name' => 'Castle Lager Case', 'sku' => 'BEER-CAS-001', 'qty' => 48, 'reorder' => 12, 'cost' => $kwacha(35), 'unit' => 'case'],
-            ['name' => 'Mosi Lager Case', 'sku' => 'BEER-MOS-001', 'qty' => 36, 'reorder' => 12, 'cost' => $kwacha(28), 'unit' => 'case'],
-            ['name' => 'Coca Cola Crate', 'sku' => 'SODA-CC-001', 'qty' => 24, 'reorder' => 6, 'cost' => $kwacha(18), 'unit' => 'crate'],
-            ['name' => 'Vatra Water Case', 'sku' => 'WAT-VAT-001', 'qty' => 60, 'reorder' => 15, 'cost' => $kwacha(7), 'unit' => 'case'],
-            ['name' => 'Fruiticana Carton', 'sku' => 'JUI-FRU-001', 'qty' => 30, 'reorder' => 8, 'cost' => $kwacha(18), 'unit' => 'carton'],
-        ];
-
-        foreach ($inventory as $inv) {
-            InventoryItem::query()->updateOrCreate(
-                ['sku' => $inv['sku']],
-                [
-                    'supplier_id' => $supplier->id,
-                    'name' => $inv['name'],
-                    'quantity' => $inv['qty'],
-                    'reorder_level' => $inv['reorder'],
-                    'unit_cost_cents' => $inv['cost'],
-                    'unit' => $inv['unit'],
-                ]
-            );
-        }
-
-        $castle = MenuItem::query()->where('name', 'Castle')->first();
-        $castleStock = InventoryItem::query()->where('sku', 'BEER-CAS-001')->first();
-        if ($castle && $castleStock) {
-            Recipe::query()->updateOrCreate(
-                ['menu_item_id' => $castle->id, 'inventory_item_id' => $castleStock->id],
-                ['quantity_required' => 1]
-            );
-        }
-
-        $this->seedCashierDemoData(app(OrderService::class));
-    }
-
-    private function seedCashierDemoData(OrderService $orderService): void
-    {
-        $waiter = User::query()->role('waiter')->first();
-
-        if (! $waiter) {
-            return;
-        }
-
-        $demoNumbers = ['DEMO-CASH-1', 'DEMO-CASH-2', 'DEMO-CASH-3'];
-
-        Order::query()->whereIn('order_number', $demoNumbers)->each(function (Order $order) {
-            $order->items()->delete();
-            $order->splits()->delete();
-            $order->payments()->delete();
-            $order->receipts()->delete();
-            $order->kitchenAlerts()->delete();
-            $order->delete();
-        });
-
-        $scenarios = [
-            [
-                'order_number' => 'DEMO-CASH-1',
-                'table' => '10',
-                'items' => [
-                    ['name' => 'Castle', 'qty' => 2],
-                    ['name' => 'Savanna', 'qty' => 2],
-                ],
-                'bill' => true,
-            ],
-            [
-                'order_number' => 'DEMO-CASH-2',
-                'table' => '11',
-                'items' => [
-                    ['name' => 'Corona', 'qty' => 2],
-                    ['name' => 'Coca Cola', 'qty' => 3],
-                    ['name' => 'Fanta Orange', 'qty' => 2],
-                ],
-                'bill' => true,
-            ],
-            [
-                'order_number' => 'DEMO-CASH-3',
-                'table' => '12',
-                'items' => [
-                    ['name' => 'Mosi', 'qty' => 2],
-                    ['name' => 'Vatra', 'qty' => 3],
-                ],
-                'bill' => false,
-            ],
-        ];
-
-        foreach ($scenarios as $scenario) {
-            $table = DiningTable::query()->where('number', $scenario['table'])->first();
-
-            if (! $table) {
-                continue;
-            }
-
-            $table->update(['status' => TableStatus::Free]);
-
-            $order = Order::query()->create([
-                'order_number' => $scenario['order_number'],
-                'dining_table_id' => $table->id,
-                'waiter_id' => $waiter->id,
-                'status' => OrderStatus::Draft,
-                'course_number' => 1,
-            ]);
-
-            $table->update(['status' => TableStatus::Occupied]);
-
-            foreach ($scenario['items'] as $line) {
-                $menuItem = MenuItem::query()->where('name', $line['name'])->first();
-
-                if ($menuItem) {
-                    $orderService->addItem($order, $menuItem, $line['qty']);
-                }
-            }
-
-            $orderService->sendToKitchen($order->fresh());
-
-            $order->refresh();
-
-            foreach ($order->items as $item) {
-                $orderService->updateItemStatus($item, OrderItemStatus::Preparing);
-                $orderService->updateItemStatus($item->fresh(), OrderItemStatus::Ready);
-
-                if ($scenario['bill']) {
-                    $orderService->updateItemStatus($item->fresh(), OrderItemStatus::Served);
-                }
-            }
-
-            if ($scenario['bill']) {
-                $orderService->requestBill($order->fresh());
-            } else {
-                $order->update(['status' => OrderStatus::Ready, 'ready_at' => now()]);
-            }
-        }
     }
 }

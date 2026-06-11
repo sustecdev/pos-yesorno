@@ -22,6 +22,7 @@ use App\Livewire\Waiter\FloorPlan;
 use App\Livewire\Waiter\OrderBuilder;
 use App\Models\DiningTable;
 use App\Models\InventoryItem;
+use App\Models\Supplier;
 use App\Models\KitchenAlert;
 use App\Models\KitchenStation;
 use App\Models\MenuCategory;
@@ -345,25 +346,6 @@ class TeboOSFeatureTest extends TestCase
         $this->assertNotNull($alert->fresh()->acknowledged_at);
     }
 
-    public function test_seeder_includes_cashier_demo_orders(): void
-    {
-        $this->assertTrue(
-            Order::query()->where('order_number', 'DEMO-CASH-1')->where('status', OrderStatus::Served)->exists()
-        );
-        $this->assertTrue(
-            Order::query()->where('order_number', 'DEMO-CASH-2')->where('status', OrderStatus::Served)->exists()
-        );
-        $this->assertTrue(
-            Order::query()->where('order_number', 'DEMO-CASH-3')->where('status', OrderStatus::Ready)->exists()
-        );
-
-        Livewire::actingAs($this->user('cashier'))
-            ->test(PaymentTerminal::class)
-            ->assertSee('DEMO-CASH-1')
-            ->assertSee('DEMO-CASH-2')
-            ->assertSee('DEMO-CASH-3');
-    }
-
     public function test_cashier_can_see_recent_paid_orders(): void
     {
         $waiter = $this->user('waiter');
@@ -576,7 +558,16 @@ class TeboOSFeatureTest extends TestCase
     public function test_admin_inventory_adjustment(): void
     {
         $admin = $this->user('admin');
-        $item = InventoryItem::query()->firstOrFail();
+        $supplier = Supplier::query()->create(['name' => 'Test Supplier']);
+        $item = InventoryItem::query()->create([
+            'supplier_id' => $supplier->id,
+            'name' => 'Test Stock',
+            'sku' => 'TEST-STOCK-001',
+            'unit' => 'case',
+            'quantity' => 10,
+            'reorder_level' => 2,
+            'unit_cost_cents' => 1000,
+        ]);
         $before = $item->quantity;
 
         Livewire::actingAs($admin)
