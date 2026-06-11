@@ -55,27 +55,20 @@ Open http://localhost:8000
 | Cashier | cashier@teboos.com | password |
 | Host | host@teboos.com | password |
 
-## VPS deploy (no `/public` in URL)
+## Shared hosting deploy
 
-When the web root is `public_html` and you want `https://yesorno.plateos.site/login` (not `/public/login`):
+Full guide: **[deploy/SHARED_HOSTING.md](deploy/SHARED_HOSTING.md)**
 
-```bash
-cd ~/domains/plateos.site/public_html/yesorno
+Quick steps for `yesorno.plateos.site` on Hostinger shared hosting:
 
-# After git pull / composer install (build assets are committed — no npm required on server)
-cp deploy/apache-public_html.htaccess .htaccess
+1. hPanel → PHP **8.3**, document root `public_html/yesorno`
+2. `git pull` into `~/domains/plateos.site/public_html/yesorno`
+3. `composer install --no-dev --optimize-autoloader`
+4. Copy `deploy/env.production.example` → `.env` (set DB + `APP_URL=https://yesorno.plateos.site`)
+5. `cp deploy/apache-public_html.htaccess .htaccess`
+6. `php artisan migrate --force --seed && php artisan storage:link && php artisan config:cache`
 
-php8.3 artisan storage:link
-php8.3 artisan config:cache
-php8.3 artisan route:cache
-php8.3 artisan view:cache
-```
-
-This rewrites requests internally to `public/` and blocks web access to `app/`, `vendor/`, `.env`, etc.
-
-For **nginx**, use `deploy/nginx-public_html.conf` as a starting point.
-
-**Requirements:** PHP 8.3+ (Laravel 13). Set `APP_URL=https://yesorno.plateos.site` in `.env`.
+No npm on the server — CSS/JS are in `public/build/`. Use `https://yesorno.plateos.site/login` (not `/public/login`).
 
 ## XAMPP + MySQL
 
