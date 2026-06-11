@@ -13,6 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Behind a VPS reverse proxy / SSL terminator, trust forwarded headers
+        // so Laravel detects the original HTTPS scheme and generates https URLs
+        // (otherwise Livewire posts to http:// and the browser blocks it as mixed content).
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
             'workspace.sync' => \App\Http\Middleware\SyncWorkspaceRole::class,
