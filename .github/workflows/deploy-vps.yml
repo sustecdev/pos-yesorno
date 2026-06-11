@@ -11,6 +11,8 @@ on:
       - 'deploy/vps-update.sh'
       - 'database/seeders/TeboOSSeeder.php'
       - 'resources/views/livewire/waiter/floor-plan.blade.php'
+      - 'app/Models/DiningTable.php'
+      - 'app/Livewire/Waiter/FloorPlan.php'
 
 jobs:
   deploy:

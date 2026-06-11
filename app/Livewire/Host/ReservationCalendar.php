@@ -106,7 +106,7 @@ class ReservationCalendar extends Component
             ->orderBy('reserved_at')
             ->get();
 
-        $tables = DiningTable::query()->with('area')->orderBy('number')->get();
+        $tables = DiningTable::query()->with('area')->orderedByNumber()->get();
 
         return view('livewire.host.reservation-calendar', compact('reservations', 'tables'));
     }

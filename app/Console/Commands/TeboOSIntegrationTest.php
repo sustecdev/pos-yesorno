@@ -89,8 +89,8 @@ class TeboOSIntegrationTest extends Command
         $host = User::role('host')->first();
         $admin = User::role('admin')->first();
 
-        $table = DiningTable::query()->where('status', TableStatus::Free)->orderBy('number')->first()
-            ?? DiningTable::query()->orderBy('number')->first();
+        $table = DiningTable::query()->where('status', TableStatus::Free)->orderedByNumber()->first()
+            ?? DiningTable::query()->orderedByNumber()->first();
 
         $this->runCheck('Free dining table available', fn () => $table !== null, "Table {$table?->number}");
 
@@ -150,7 +150,7 @@ class TeboOSIntegrationTest extends Command
         $resTable = DiningTable::query()
             ->where('status', TableStatus::Free)
             ->where('id', '!=', $table->id)
-            ->orderBy('number')
+            ->orderedByNumber()
             ->first();
 
         $this->runCheck('Host creates reservation', function () use ($host, $resTable) {

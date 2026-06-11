@@ -54,7 +54,7 @@
     @endif
 
     {{-- Table grid --}}
-    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2.5 md:gap-3">
+    <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 md:gap-2.5">
         @forelse($tables as $table)
             @php
                 $order = $table->activeOrder;
@@ -75,7 +75,7 @@
             @endphp
             <button wire:click="selectTable({{ $table->id }})"
                 class="tablet-table-card {{ $visual }} relative aspect-[4/3] flex flex-col items-center justify-center gap-1">
-                <div class="font-display text-5xl font-bold leading-none">{{ $table->number }}</div>
+                <div class="font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-none">{{ $table->number }}</div>
                 @if($order)
                     <div class="text-tebo-amber font-bold text-lg">{{ money($order->total_cents, false) }}</div>
                     <div class="text-xs font-medium px-2 py-0.5 rounded-full

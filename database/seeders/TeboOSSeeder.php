@@ -74,6 +74,7 @@ class TeboOSSeeder extends Seeder
         $area = DiningArea::query()->updateOrCreate(['name' => 'Main Dining'], ['sort_order' => 1]);
 
         $tableCount = 32;
+        $tableColumns = 8;
 
         for ($i = 1; $i <= $tableCount; $i++) {
             DiningTable::query()->updateOrCreate(
@@ -81,8 +82,8 @@ class TeboOSSeeder extends Seeder
                 [
                     'seats' => $i % 3 === 0 ? 6 : 4,
                     'status' => TableStatus::Free,
-                    'position_x' => (($i - 1) % 4) * 2,
-                    'position_y' => intdiv($i - 1, 4) * 2,
+                    'position_x' => (($i - 1) % $tableColumns) * 2,
+                    'position_y' => intdiv($i - 1, $tableColumns) * 2,
                 ]
             );
         }

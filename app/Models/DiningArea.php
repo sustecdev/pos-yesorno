@@ -16,6 +16,6 @@ class DiningArea extends Model
 
     public function tables(): HasMany
     {
-        return $this->hasMany(DiningTable::class)->orderBy('number');
+        return $this->hasMany(DiningTable::class)->orderedByNumber();
     }
 }

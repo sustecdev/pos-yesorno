@@ -60,7 +60,7 @@ class FloorPlan extends Component
         $allTables = DiningTable::query()
             ->with(['activeOrder.items'])
             ->when($this->selectedAreaId, fn ($q) => $q->where('dining_area_id', $this->selectedAreaId))
-            ->orderBy('number')
+            ->orderedByNumber()
             ->get();
 
         $tables = $allTables->filter(fn ($t) => $this->tableMatchesFilter($t));
@@ -82,12 +82,15 @@ class FloorPlan extends Component
     {
         return $tables
             ->filter(fn ($t) => $t->activeOrder)
-            ->sortBy(fn ($t) => match ($t->activeOrder->status) {
-                OrderStatus::Served => 0,
-                OrderStatus::Ready => 1,
-                OrderStatus::Preparing, OrderStatus::Sent => 2,
-                default => 3,
-            })
+            ->sortBy([
+                fn ($t) => match ($t->activeOrder->status) {
+                    OrderStatus::Served => 0,
+                    OrderStatus::Ready => 1,
+                    OrderStatus::Preparing, OrderStatus::Sent => 2,
+                    default => 3,
+                },
+                fn ($t) => (int) $t->number,
+            ])
             ->values();
     }
 }
